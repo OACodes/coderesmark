@@ -1,9 +1,15 @@
-// PORT=3000
-// NODE_ENV=development
-// MONGO_URI=mongodb://localhost:27017/coderesmark
-// REDIS_URL=redis://localhost:6379
-// JWT_ACCESS_SECRET=
-// JWT_REFRESH_SECRET=
-// JWT_ACCESS_EXPIRY=15m
-// JWT_REFRESH_EXPIRY=7d
-// OPENAI_API_KEY=""
+import { config } from 'dotenv';
+
+config({ path: `.env.${process.env.NODE_ENV || 'development'}.local` });
+
+export const {
+    PORT,
+    NODE_ENV,
+    MONGO_URI,
+    REDIS_URL,
+    JWT_ACCESS_SECRET,
+    JWT_REFRESH_SECRET,
+    JWT_ACCESS_EXPIRY,
+    JWT_REFRESH_EXPIRY,
+    OPENAI_API_KEY
+} = process.env;
