@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 
-const categorySchema  = mongoose.creatSchema({
+const categorySchema  = mongoose.Schema({
     userId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
         index: true
     },
     name:{

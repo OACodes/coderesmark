@@ -1,10 +1,11 @@
 import express from 'express';
 import connectToDatabase from './config/db.js';
+import seedSystemCategories from './config/seed.js';
 
 const app = express();
 
 // connect to database
-connectToDatabase();
+connectToDatabase().then(() => seedSystemCategories());
 
 // express built in middlerware
 // handles json data sent in requests and API Calls
