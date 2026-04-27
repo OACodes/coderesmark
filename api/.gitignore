@@ -5,3 +5,6 @@ node_modules/
 coverage/
 dist/
 *.log
+
+!.env.example
+!api/.env.example
