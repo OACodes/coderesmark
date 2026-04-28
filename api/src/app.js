@@ -1,6 +1,7 @@
 import express from 'express';
 import connectToDatabase from './config/db.js';
 import seedSystemCategories from './config/seed.js';
+import authRouter from './routes/auth.routes.js';
 
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 
+app.use('/api/v1/auth', authRouter);
 
 
 app.get('/health', (req, res) => {
