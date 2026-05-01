@@ -2,7 +2,7 @@ import express from 'express';
 import connectToDatabase from './config/db.js';
 import seedSystemCategories from './config/seed.js';
 import authRouter from './routes/auth.routes.js';
-
+import errorMiddleware from './middleware/error.middleware.js';
 
 const app = express();
 // connect to database
@@ -17,6 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/v1/auth', authRouter);
 
+app.use(errorMiddleware);
 
 app.get('/health', (req, res) => {
     res.send('CodeResMark Server is running!');
