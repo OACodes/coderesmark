@@ -10,7 +10,7 @@ const verifyJWT = (req, res, next) => {
         }
 
         if (!token){
-            return res.status(401).json({ message: 'Unauthorized by token'});
+            return res.status(401).json({ message: 'Unauthorized by token' });
         }
 
         const decoded = jwt.verify(token, JWT_ACCESS_SECRET);

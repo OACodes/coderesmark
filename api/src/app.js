@@ -3,6 +3,7 @@ import connectToDatabase from './config/db.js';
 import seedSystemCategories from './config/seed.js';
 import authRouter from './routes/auth.routes.js';
 import errorMiddleware from './middleware/error.middleware.js';
+import categoryRouter from './routes/category.routes.js';
 
 const app = express();
 // connect to database
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/category', categoryRouter);
 
 app.use(errorMiddleware);
 
