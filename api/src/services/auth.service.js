@@ -26,9 +26,7 @@ export const register = async ({ username, email, password }) => {
 
         const existingUser = await User.findOne({ email });
         if (existingUser){
-            const error = new Error('User already exists');
-            error.statusCode = 409;
-            throw error;
+            throw new AppError('User already exists', 409, 'USER_EXISTS');
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -62,16 +60,12 @@ export const login = async ({ email, password }) => {
     const user = await User.findOne({ email }).select('+passwordHash');
 
     if (!user){
-        const error = new Error("User not found");
-        error.statusCode = 404;
-        throw error;
+        throw new AppError('User not found', 404, 'USER_NOT_FOUND');
     }
 
     const checkPassword = await bcrypt.compare(password, user.passwordHash);
     if (!checkPassword){
-        const error = new Error('Invalid Password');
-        error.statusCode = 401;
-        throw error;
+        throw new AppError('Invalid Password', 401, 'INVALID_PASSWORD');
     }
 
     const { accessToken, refreshToken } = await generateTokens(user._id);

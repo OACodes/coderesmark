@@ -1,22 +1,25 @@
 import { Router } from 'express';
 import { getAllUserCategories, getSingleCategory, createCategory, updateCategory, deleteCategory } from '../controllers/category.controller.js';
+import verifyJWT from '../middleware/auth.middleware.js';
 
 const categoryRouter = Router();
 
-// get all user categories
-categoryRouter.get('/:id', getAllUserCategories);
+// Apply authentication middleware to all routes
+categoryRouter.use(verifyJWT);
 
-// get single category for user
-categoryRouter.get('/:id', getSingleCategory);
+// Get all user categories
+categoryRouter.get('/', getAllUserCategories);
 
-// create category
-categoryRouter.post('/:id', createCategory);
+// Get single category for user
+categoryRouter.get('/details/:id', getSingleCategory);
 
-// update category
+// Create category
+categoryRouter.post('/', createCategory);
+
+// Update category
 categoryRouter.patch('/:id', updateCategory);
 
-
-// delete category
+// Delete category
 categoryRouter.delete('/:id', deleteCategory);
 
 export default categoryRouter;

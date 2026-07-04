@@ -2,7 +2,7 @@ import Category from '../models/category.model.js';
 import { AppError } from '../utils/AppError.js';
 const getAllUserCategoriesService = async (targetId, authUserId) => {
     if (targetId.toString() !== authUserId.toString()){
-        throw new AppError('You are not the owner of this account', 403, 'UNAUTHORIZED_OWNER');
+        throw new AppError('You are not authorized to access this category', 403, 'UNAUTHORIZED_OWNER');
     }
 
     const categories = await Category.find({ userId: targetId });
@@ -24,12 +24,15 @@ const getSingleCategoryService = async (categoryId, authUserId) => {
 }
 
 const createCategoryService = async ({ userId, name, icon, color, isSystem }) => {
+    if (!userId) {
+        throw new AppError('User ID is required', 400, 'MISSING_USER_ID');
+    }
     const newCategory = await Category.create({
         userId: userId,
         name: name,
         icon: icon,
         color: color,
-        isSystem: isSystem
+        isSystem: isSystem || false
     });
 
     return newCategory;
@@ -44,7 +47,7 @@ const updateCategoryService = async (targetId, authUserId, { changedEntries }) =
     }
 
     if (category.userId.toString() !== authUserId.toString()){
-        throw new AppError('You are not the owner of this account', 403, 'UNAUTHORIZED_OWNER');
+        throw new AppError('You are not authorized to access this category', 403, 'UNAUTHORIZED_OWNER');
     }
 
     const updatedCategory = await Category.findByIdAndUpdate(
@@ -63,7 +66,7 @@ const deleteCategoryService = async (targetId, authUserId) => {
     }
 
     if (category.userId.toString() !== authUserId.toString()){
-        throw new AppError('You are not the owner of this account', 403, 'UNAUTHORIZED_OWNER');
+        throw new AppError('You are not authorized to access this category', 403, 'UNAUTHORIZED_OWNER');
     }
 
     if (category.isSystem === true){
