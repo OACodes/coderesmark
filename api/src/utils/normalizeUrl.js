@@ -67,13 +67,23 @@ const ALLOWED_SCHEMES = new Set(['http:', 'https:']);
  * @param {string} rawUrl  The URL to normalize.
  * @returns {string}       The canonical form.
  * @throws {Error}         If input is not a string, malformed, or uses a
- *                         blocked/unsupported scheme.
+ *                         blocked/unsupported scheme. The thrown error
+ *                         has a `.code` property with one of:
+ *                           - 'URL_INVALID_TYPE'    — input wasn't a string
+ *                           - 'URL_INVALID'         — input was a string but not a valid URL
+ *                           - 'URL_BLOCKED_SCHEME'  — security-blocked scheme (javascript:, file:, etc.)
+ *                           - 'URL_UNSUPPORTED_SCHEME' — non-http(s) scheme (ftp:, mailto:, etc.)
+ *                         Callers should switch on `error.code`, not on
+ *                         `error.message` (which is human-readable and
+ *                         subject to change).
  */
 export const normalizeUrl = (rawUrl) => {
     // 1. Input type check — catch null/undefined/numbers before they reach
     //    the URL constructor (which would throw a less helpful error).
     if (typeof rawUrl !== 'string') {
-        throw new Error(`Invalid URL: expected a string, got ${typeof rawUrl}`);
+        const err = new Error(`Invalid URL: expected a string, got ${typeof rawUrl}`);
+        err.code = 'URL_INVALID_TYPE';
+        throw err;
     }
 
     // 2. Parse. Wrapped in try/catch because the constructor throws on
@@ -82,19 +92,25 @@ export const normalizeUrl = (rawUrl) => {
     try {
         parsed = new URL(rawUrl);
     } catch {
-        throw new Error(`Invalid URL: ${rawUrl}`);
+        const err = new Error(`Invalid URL: ${rawUrl}`);
+        err.code = 'URL_INVALID';
+        throw err;
     }
 
     // 3. Security blocklist. The URL constructor accepts e.g.
     //    "javascript:alert(1)" as a valid URL instance, so we MUST
     //    check the scheme explicitly. This is the security boundary.
     if (BLOCKED_SCHEMES.has(parsed.protocol)) {
-        throw new Error(`Blocked scheme: ${parsed.protocol}`);
+        const err = new Error(`Blocked scheme: ${parsed.protocol}`);
+        err.code = 'URL_BLOCKED_SCHEME';
+        throw err;
     }
 
     // 4. Allowlist. Only http and https are valid bookmark targets.
     if (!ALLOWED_SCHEMES.has(parsed.protocol)) {
-        throw new Error(`Unsupported scheme: ${parsed.protocol}`);
+        const err = new Error(`Unsupported scheme: ${parsed.protocol}`);
+        err.code = 'URL_UNSUPPORTED_SCHEME';
+        throw err;
     }
 
     // 5. Host is case-insensitive. Normalize to lowercase.
